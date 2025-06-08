@@ -5,13 +5,6 @@
   --foreground: #171717;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
@@ -23,4 +16,74 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Mobile-style smooth sliding animations */
+@keyframes slideLeft {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes slideRight {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Smooth mobile slider */
+.mobile-slider {
+  transition: transform 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+/* Animation classes */
+.slide-left {
+  animation: slideLeft 0.5s ease-out forwards;
+}
+
+.slide-right {
+  animation: slideRight 0.5s ease-out forwards;
+}
+
+/* Mobile slider container */
+.slider-container {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  touch-action: pan-y;
+}
+
+/* Enhanced hover and focus effects */
+.cursor-grab:active {
+  cursor: grabbing;
+}
+
+/* Hardware-accelerated transforms for better performance */
+.slide-left,
+.slide-right,
+.mobile-slider {
+  will-change: transform;
+  backface-visibility: hidden;
+  transform: translate3d(0, 0, 0);
+}
+
+/* Smooth image rendering */
+img {
+  image-rendering: optimizeQuality;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+}
+
+/* Prevent flickering during animations */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
