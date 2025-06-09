@@ -16,6 +16,7 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  overflow-x: hidden; /* Prevent horizontal scroll */
 }
 
 /* Mobile-style smooth sliding animations */
@@ -86,4 +87,949 @@ img {
 * {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Responsive design improvements */
+@media (max-width: 640px) {
+  /* Ensure mobile viewport is properly handled */
+  html {
+    touch-action: pan-y;
+  }
+  
+  /* Optimize for mobile scrolling */
+  .mobile-slider {
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Prevent text selection on touch devices */
+  .cursor-grab {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+}
+
+/* Enhanced responsive card styles */
+.product-card {
+  /* Enhanced hardware acceleration for all devices */
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  will-change: transform, opacity;
+  
+  /* Improved transitions with device-specific timing */
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), 
+              opacity 0.3s ease-out;
+}
+
+/* Mobile-specific card optimizations */
+@media (max-width: 479px) {
+  .product-card {
+    transition-duration: 0.2s; /* Faster transitions on very small screens */
+  }
+  
+  /* Optimize for very small screens */
+  .slider-container {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+  }
+}
+
+@media (max-width: 640px) {
+  /* Optimize card rendering on mobile */
+  .product-card {
+    contain: layout style paint;
+    transform: translate3d(0, 0, 0); /* Force hardware acceleration */
+  }
+  
+  /* Improve touch response */
+  .cursor-grab {
+    touch-action: pan-x; /* Only allow horizontal panning */
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  /* Tablet-specific optimizations */
+  .product-card {
+    transition-duration: 0.25s;
+  }
+}
+
+@media (min-width: 1025px) {
+  /* Desktop optimizations */
+  .product-card {
+    transition-duration: 0.3s;
+  }
+}
+
+/* Advanced responsive card enhancements */
+.product-card {
+  /* Enhanced hardware acceleration for all devices */
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  will-change: transform, opacity;
+  
+  /* Improved transitions with device-specific timing */
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), 
+              opacity 0.3s ease-out;
+}
+
+/* Device-specific optimizations */
+@media (max-width: 360px) {
+  /* Very small devices - optimize for performance */
+  .product-card {
+    transition-duration: 0.2s;
+    will-change: transform; /* Reduce will-change properties for low-end devices */
+  }
+  
+  /* Reduce visual complexity on very small screens */
+  .slider-container {
+    filter: none; /* Remove any filters that might impact performance */
+  }
+}
+
+@media (max-width: 480px) {
+  /* Small mobile devices */
+  .product-card {
+    contain: layout style paint; /* CSS containment for better performance */
+    transform-origin: center center; /* Optimize transform origin */
+  }
+  
+  /* Enhanced touch response */
+  .cursor-grab {
+    touch-action: pan-x; /* Allow only horizontal panning */
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  /* Optimize images for mobile */
+  .product-card img {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  /* Large mobile and small tablets */
+  .product-card {
+    transition-duration: 0.25s;
+    
+    /* Enhanced visual quality for larger screens */
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  /* Tablets and small laptops */
+  .product-card {
+    transition-duration: 0.3s;
+    
+    /* Add subtle hover effects for devices with hover capability */
+    transition-property: transform, opacity, filter;
+  }
+  
+  .product-card:hover {
+    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.15));
+  }
+}
+
+@media (min-width: 1025px) {
+  /* Desktop and larger */
+  .product-card {
+    transition-duration: 0.35s;
+    
+    /* Enhanced desktop effects */
+    transition-property: transform, opacity, filter, box-shadow;
+  }
+  
+  .product-card:hover {
+    filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.2));
+  }
+}
+
+/* High refresh rate display optimizations */
+@media (min-refresh-rate: 90) {
+  .product-card,
+  .mobile-slider {
+    transition-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1);
+  }
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .product-card,
+  .mobile-slider,
+  .slide-left,
+  .slide-right {
+    transition-duration: 0.1s !important;
+    animation-duration: 0.1s !important;
+  }
+}
+
+/* Enhanced dark mode optimizations */
+@media (prefers-color-scheme: dark) {
+  .product-card {
+    /* Improve contrast in dark mode */
+    filter: brightness(1.05) contrast(1.02);
+  }
+}
+
+/* Landscape mobile specific optimizations */
+@media (max-height: 500px) and (orientation: landscape) {
+  .product-card {
+    /* Optimize for landscape phones */
+    max-height: 60vh;
+    transform-origin: center bottom;
+  }
+  
+  /* Adjust container spacing */
+  .card-container {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+}
+
+/* Ultra-wide display optimizations */
+@media (min-width: 1920px) {
+  .product-card {
+    /* Enhanced effects for large displays */
+    transition-property: transform, opacity, filter, backdrop-filter;
+  }
+  
+  .product-card:hover {
+    backdrop-filter: blur(0.5px);
+  }
+}
+
+/* Performance optimizations for low-end devices */
+@media (max-width: 640px) and (-webkit-max-device-pixel-ratio: 1) {
+  /* Low-DPI mobile devices - reduce visual complexity */
+  .product-card {
+    filter: none !important;
+    box-shadow: none !important;
+    will-change: transform;
+  }
+}
+
+/* Enhanced accessibility */
+@media (prefers-contrast: high) {
+  .product-card {
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    filter: contrast(1.2);
+  }
+}
+
+/* Battery optimization for mobile */
+@media (max-width: 768px) {
+  .product-card.dragging {
+    /* Reduce effects during dragging for better performance */
+    filter: none;
+    box-shadow: none;
+    transition: none;
+  }
+}
+
+/* Responsive image optimizations */
+@media (max-width: 640px) {
+  .product-card img {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+}
+
+/* High DPI display optimizations */
+@media (-webkit-min-device-pixel-ratio: 2) and (max-width: 768px),
+       (min-resolution: 192dpi) and (max-width: 768px) {
+  .product-card {
+    transform: translateZ(0); /* Improve rendering on high-DPI mobile */
+  }
+}
+
+/* Landscape mobile optimizations */
+@media (max-width: 896px) and (orientation: landscape) {
+  .product-card {
+    max-height: 70vh; /* Ensure cards don't overflow in landscape */
+  }
+}
+
+/* Custom responsive breakpoints */
+@media (max-width: 479px) {
+  .xs\:pt-24 { padding-top: 6rem; }
+  .xs\:pb-24 { padding-bottom: 6rem; }
+}
+
+/* Responsive card container */
+.card-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0; /* Allow flex shrinking */
+}
+
+/* Smooth scrolling for mobile */
+@media (max-width: 768px) {
+  .card-container {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Performance optimizations for different screen sizes */
+@media (max-width: 640px) {
+  /* Reduce complexity on mobile for better performance */
+  .product-card {
+    will-change: transform;
+    backface-visibility: hidden;
+    perspective: 1000px;
+  }
+  
+  /* Optimize animations for mobile */
+  .transition-transform {
+    transition-property: transform;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+@media (min-width: 1024px) {
+  /* Enhanced effects for desktop */
+  .product-card:hover {
+    transform-origin: center center;
+  }
+  
+  /* Better quality animations on desktop */
+  .transition-transform {
+    transition-property: transform, opacity, filter;
+  }
+}
+
+/* Aspect ratio constraints for better layout */
+.aspect-card {
+  aspect-ratio: 5/9; /* Maintain consistent aspect ratio */
+  max-width: 100%;
+  height: auto;
+}
+
+/* Responsive text and UI elements */
+@media (max-width: 640px) {
+  /* Smaller UI elements on mobile */
+  .responsive-ui {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+  }
+}
+
+/* Print styles (hidden cards) */
+@media print {
+  .product-card {
+    display: none;
+  }
+}
+
+/* Responsive Product Image Enhancements */
+.product-image-container {
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform, opacity;
+}
+
+/* Image loading optimizations */
+.product-image {
+  transition: all 0.3s ease-out;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+
+/* Mobile-specific optimizations */
+@media (max-width: 767px) {
+  .product-image-container {
+    /* Reduce motion for battery conservation */
+    transition: transform 0.2s ease-out, opacity 0.2s ease-out;
+  }
+  
+  /* Optimize image rendering on mobile */
+  .product-image {
+    image-rendering: auto;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    backface-visibility: hidden;
+  }
+}
+
+/* High DPI display optimizations */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .product-image {
+    image-rendering: -webkit-optimize-contrast;
+  }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+  .product-image-container {
+    /* Faster transitions for touch devices */
+    transition-duration: 0.2s;
+  }
+}
+
+/* Landscape mobile optimizations */
+@media (max-width: 768px) and (orientation: landscape) {
+  .product-image-container {
+    /* Adjust for landscape mobile viewing */
+    max-height: 80vh;
+  }
+}
+
+/* Loading state improvements */
+.product-image[data-loading="true"] {
+  filter: blur(2px);
+  opacity: 0.7;
+  transition: filter 0.3s ease-out, opacity 0.3s ease-out;
+}
+
+.product-image[data-loading="false"] {
+  filter: blur(0);
+  opacity: 1;
+}
+
+/* Performance optimizations for large screens */
+@media (min-width: 1920px) {
+  .product-image-container {
+    /* Use GPU acceleration for large displays */
+    transform: translateZ(0);
+    will-change: transform;
+  }
+}
+
+/* Complete Background Removal - Seamless Blend */
+.product-no-background {
+  /* Aggressive background removal using multiply blend mode */
+  mix-blend-mode: multiply;
+  
+  /* Enhanced filtering to completely eliminate backgrounds */
+  filter: 
+    brightness(1.5) 
+    contrast(2.0) 
+    saturate(1.3)
+    hue-rotate(0deg);
+  
+  /* Ensure smooth blending */
+  background-color: transparent;
+  background-image: none;
+  backdrop-filter: none;
+}
+
+/* Additional masking for complete background elimination */
+.product-image-container {
+  /* Apply a radial mask to fade edges completely */
+  -webkit-mask: 
+    radial-gradient(ellipse 75% 85% at center, black 50%, transparent 85%),
+    linear-gradient(to bottom, black 10%, black 90%, transparent 100%);
+  mask: 
+    radial-gradient(ellipse 75% 85% at center, black 50%, transparent 85%),
+    linear-gradient(to bottom, black 10%, black 90%, transparent 100%);
+  -webkit-mask-composite: intersect;
+  mask-composite: intersect;
+}
+
+/* Remove all shadows and effects that might show background */
+.product-image-container {
+  box-shadow: none !important;
+  border: none !important;
+  background-color: transparent !important;
+  background-image: none !important;
+}
+
+/* Override any existing background effects */
+.product-no-background * {
+  background-color: transparent !important;
+  background-image: none !important;
+  backdrop-filter: none !important;
+}
+
+/* Ensure complete transparency on all devices */
+@media (max-width: 768px) {
+  .product-no-background {
+    mix-blend-mode: multiply;
+    filter: brightness(1.8) contrast(2.5) saturate(1.4);
+  }
+}
+
+/* High contrast override */
+@media (prefers-contrast: high) {
+  .product-no-background {
+    mix-blend-mode: multiply;
+    filter: brightness(2.0) contrast(3.0) saturate(1.5);
+  }
+}
+
+/* Complete background elimination for all blend mode support */
+@supports (mix-blend-mode: multiply) {
+  .product-no-background {
+    mix-blend-mode: multiply;
+  }
+}
+
+@supports not (mix-blend-mode: multiply) {
+  .product-no-background {
+    /* Extreme filtering for background removal */
+    filter: 
+      brightness(2.0) 
+      contrast(3.0) 
+      saturate(1.5)
+      drop-shadow(0 0 0 transparent);
+  }
+}
+
+/* FINAL OVERRIDE - Complete Background Elimination */
+.product-image-container,
+.product-image-container *,
+.product-no-background,
+.product-no-background * {
+  /* Remove ALL background effects using specific properties */
+  background-color: transparent !important;
+  background-image: none !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  background-size: contain !important;
+  backdrop-filter: none !important;
+  box-shadow: none !important;
+  border: none !important;
+  outline: none !important;
+}
+
+/* Remove any hover effects that might show backgrounds */
+.product-image-container:hover,
+.product-no-background:hover {
+  background-color: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  filter: inherit !important;
+}
+
+/* Ensure seamless blending with page background */
+.product-image-container::before,
+.product-image-container::after {
+  display: none !important;
+}
+
+/* Perfect Bottom Center Navigation Wheel */
+.wheel-container {
+  /* Ensure proper z-index and positioning */
+  z-index: 20;
+  pointer-events: auto;
+  
+  /* Perfect bottom center positioning */
+  position: fixed !important;
+  bottom: 0 !important;
+  left: 50% !important;
+  transform: translateX(-50%) translateY(50%) !important;
+  
+  /* Smooth transitions */
+  transition: transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+  will-change: transform;
+  
+  /* Ensure proper display */
+  overflow: visible;
+  margin: 0;
+  padding: 0;
+}
+
+.wheel-rotation {
+  /* Hardware acceleration for smooth rotation */
+  transform-origin: center center;
+  backface-visibility: hidden;
+  perspective: 1000px;
+  
+  /* Enhanced rotation smoothness */
+  transition-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1);
+  will-change: transform;
+}
+
+.wheel-image {
+  /* Optimize image rendering */
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* Device-specific wheel optimizations */
+@media (max-width: 360px) {
+  .wheel-rotation {
+    /* Faster transitions on low-end devices */
+    transition-duration: 0.3s;
+  }
+}
+
+@media (max-width: 640px) {
+  .wheel-image {
+    /* Optimize for mobile rendering */
+    image-rendering: auto;
+  }
+}
+
+@media (min-width: 1537px) {
+  .wheel-rotation {
+    /* Enhanced effects for large screens */
+    filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.4));
+  }
+}
+
+/* High refresh rate displays */
+@media (min-refresh-rate: 90) {
+  .wheel-rotation {
+    transition-timing-function: linear;
+  }
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .wheel-rotation {
+    transition-duration: 0.1s !important;
+  }
+  
+  .wheel-container {
+    transition-duration: 0.1s !important;
+  }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+  .wheel-rotation {
+    /* Faster response on touch devices */
+    transition-duration: 0.4s;
+  }
+}
+
+/* High DPI display optimizations */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .wheel-image {
+    image-rendering: -webkit-optimize-contrast;
+  }
+}
+
+/* Battery optimization for mobile */
+@media (max-width: 768px) {
+  .wheel-rotation.dragging {
+    /* Reduce effects during dragging */
+    filter: none;
+    transition: none;
+  }
+}
+
+/* Interactive wheel enhancements */
+.wheel-rotation {
+  /* Add interactive feedback */
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+.wheel-rotation:hover {
+  /* Enhanced hover effect */
+  filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.4)) brightness(1.1) !important;
+  transform-origin: center center;
+}
+
+.wheel-rotation:active {
+  /* Active press feedback */
+  transform: scale(0.98);
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.5)) brightness(1.05) !important;
+}
+
+/* Touch device specific interactions */
+@media (hover: none) and (pointer: coarse) {
+  .wheel-rotation:hover {
+    /* Remove hover effects on touch devices */
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3)) !important;
+  }
+  
+  .wheel-rotation:active {
+    /* Enhanced touch feedback */
+    transform: scale(0.95);
+    transition: transform 0.1s ease-out;
+  }
+}
+
+/* Wheel segment highlighting (optional visual enhancement) */
+.wheel-rotation::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle at center, transparent 45%, rgba(255, 255, 255, 0.05) 46%, rgba(255, 255, 255, 0.05) 54%, transparent 55%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease-out;
+}
+
+.wheel-rotation:hover::before {
+  opacity: 1;
+}
+
+/* Ensure perfect centering across all devices */
+@media screen {
+  .wheel-container {
+    /* Force exact center positioning */
+    left: 50% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+}
+
+/* Prevent any layout shifts */
+.wheel-container * {
+  box-sizing: border-box;
+}
+
+/* Responsive center adjustments */
+@media (max-width: 480px) {
+  .wheel-container {
+    /* Ensure centering on small screens */
+    left: 50% !important;
+    transform: translateX(-50%) translateY(50%) !important;
+  }
+}
+
+@media (min-width: 1920px) {
+  .wheel-container {
+    /* Maintain perfect center on large screens */
+    left: 50% !important;
+    transform: translateX(-50%) translateY(50%) !important;
+  }
+}
+
+/* Enhanced Responsive Logo System */
+.logo-container {
+  /* Smooth transitions for logo sizing */
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+/* Logo performance optimizations */
+.logo-container img {
+  /* Optimize logo rendering on different devices */
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  transition: all 0.3s ease-out;
+  
+  /* Ensure sharp rendering on high-DPI displays */
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* Mobile logo optimizations */
+@media (max-width: 479px) {
+  .logo-container {
+    /* Extra small devices - optimize for performance */
+    will-change: transform;
+    transition-duration: 0.2s;
+  }
+  
+  .logo-container img {
+    /* Reduce complexity for low-end devices */
+    image-rendering: auto;
+    filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.2));
+  }
+}
+
+/* Small mobile devices */
+@media (min-width: 480px) and (max-width: 639px) {
+  .logo-container img {
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.25));
+  }
+}
+
+/* Large mobile and small tablets */
+@media (min-width: 640px) and (max-width: 767px) {
+  .logo-container img {
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
+  }
+}
+
+/* Tablets and small laptops */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .logo-container img {
+    filter: drop-shadow(0 3px 10px rgba(0, 0, 0, 0.3));
+  }
+  
+  .logo-container:hover img {
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
+    transform: translateZ(0) scale(1.02);
+  }
+}
+
+/* Desktop and larger */
+@media (min-width: 1024px) {
+  .logo-container {
+    transition-duration: 0.35s;
+  }
+  
+  .logo-container img {
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.35));
+  }
+  
+  .logo-container:hover img {
+    filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.45));
+    transform: translateZ(0) scale(1.05);
+  }
+}
+
+/* Ultra-wide displays */
+@media (min-width: 1920px) {
+  .logo-container img {
+    filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.4));
+  }
+  
+  .logo-container:hover img {
+    filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.5));
+    transform: translateZ(0) scale(1.08);
+  }
+}
+
+/* High DPI display optimizations */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .logo-container img {
+    image-rendering: -webkit-optimize-contrast;
+  }
+}
+
+/* Landscape orientation optimizations */
+@media (max-height: 500px) and (orientation: landscape) {
+  .logo-container {
+    /* Reduce logo size in landscape mobile to save space */
+    transform: scale(0.8);
+    transform-origin: center top;
+  }
+}
+
+/* Dark mode enhancements */
+@media (prefers-color-scheme: dark) {
+  .logo-container img {
+    /* Enhance logo visibility in dark mode */
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.6)) brightness(1.05);
+  }
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .logo-container,
+  .logo-container img {
+    transition-duration: 0.1s !important;
+    transform: none !important;
+  }
+  
+  .logo-container:hover img {
+    transform: none !important;
+  }
+}
+
+/* Performance optimizations for low-end devices */
+@media (max-width: 640px) and (-webkit-max-device-pixel-ratio: 1) {
+  .logo-container {
+    will-change: transform;
+  }
+  
+  .logo-container img {
+    filter: none;
+    box-shadow: none;
+  }
+}
+
+/* Battery optimization for mobile */
+@media (max-width: 768px) {
+  .logo-container.loading {
+    /* Reduce effects during loading for better performance */
+    filter: none;
+    transition: none;
+  }
+}
+
+/* Logo Safe Area and Notch Support */
+@supports (padding-top: env(safe-area-inset-top)) {
+  .logo-container {
+    padding-top: calc(env(safe-area-inset-top) + 0.5rem);
+  }
+}
+
+/* Extreme small screens (older phones) */
+@media (max-width: 320px) {
+  .logo-container {
+    padding-top: 0.5rem;
+    transform: translateX(-50%) scale(0.9);
+  }
+}
+
+/* Foldable phones and unusual aspect ratios */
+@media (max-width: 320px) and (max-height: 640px) {
+  .logo-container {
+    transform: translateX(-50%) scale(0.8);
+  }
+}
+
+/* Ultra-wide screens (21:9 and wider) */
+@media (min-aspect-ratio: 21/9) {
+  .logo-container {
+    /* Adjust positioning for ultra-wide displays */
+    left: 25%;
+    transform: translateX(-50%);
+  }
+}
+
+/* Portrait tablets and large phones */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+  .logo-container img {
+    max-width: 85vw;
+  }
+}
+
+/* Landscape tablets */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
+  .logo-container {
+    padding-top: 1rem;
+  }
+}
+
+/* Large desktop displays (4K and above) */
+@media (min-width: 2560px) {
+  .logo-container img {
+    max-width: 500px;
+    max-height: 300px;
+  }
+}
+
+/* TV displays and very large screens */
+@media (min-width: 3840px) {
+  .logo-container {
+    padding-top: 3rem;
+  }
+  
+  .logo-container img {
+    max-width: 600px;
+    max-height: 360px;
+  }
+}
+
+/* Print optimizations */
+@media print {
+  .logo-container {
+    position: static;
+    transform: none;
+    padding: 1rem 0;
+    text-align: center;
+  }
+  
+  .logo-container img {
+    max-width: 200px;
+    filter: none;
+    box-shadow: none;
+  }
 }

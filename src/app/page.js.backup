@@ -1,7 +1,32 @@
 'use client';
 
 import Image from "next/image";
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo, memo } from "react";
+import dynamic from "next/dynamic";
+import ResponsiveLogo from "../components/ResponsiveLogo";
+import NavigationWheel from "../components/NavigationWheel";
+import ProductCard from "../components/ProductCard";
+
+// Dynamic imports for performance optimization
+const WebVitalsMonitor = dynamic(() => import("../components/WebVitalsMonitor"), {
+  ssr: false,
+  loading: () => null,
+});
+
+const MemoryManager = dynamic(() => import("../components/MemoryManager"), {
+  ssr: false,
+  loading: () => null,
+});
+
+const ErrorBoundary = dynamic(() => import("../components/ErrorBoundary"), {
+  ssr: false,
+  loading: () => null,
+});
+
+const ServiceWorkerRegistration = dynamic(() => import("../components/ServiceWorkerRegistration"), {
+  ssr: false,
+  loading: () => null,
+});
 
 export default function Home() {
   // Core state management
@@ -12,26 +37,116 @@ export default function Home() {
   const [isInitialized, setIsInitialized] = useState(false);
 
   const sliderRef = useRef(null);
-  const containerRef = useRef(null);
-  // Product data
-  const products = [
+  const containerRef = useRef(null);  // Memoized product data to prevent unnecessary re-renders
+  const products = useMemo(() => [
     { id: 1, name: "GAME ON 49", image: "/product/condom-product-GAME ON-49.png" },
     { id: 2, name: "GAME ON 52", image: "/product/condom-product-GAME ON-52.png" },
     { id: 3, name: "GAME ON 54", image: "/product/condom-product-GAME ON-54.png" },
     { id: 4, name: "GAME ON 56", image: "/product/condom-product-GAME ON-56.png" },
     { id: 5, name: "GAME ON 60", image: "/product/condom-product-GAME ON-60.png" },
-  ];  // Loop configuration with responsive card width
+  ], []);
+  // Loop configuration with responsive card width
   const [cardWidth, setCardWidth] = useState(500);
   const [cardHeight, setCardHeight] = useState(896); // 56rem = 896px
   const [wheelSize, setWheelSize] = useState(128); // Dynamic wheel size
   const [logoSize, setLogoSize] = useState({ width: 200, height: 120 }); // Dynamic logo size
-  const [logoPadding, setLogoPadding] = useState('2rem'); // Dynamic logo padding
-  const [contentPadding, setContentPadding] = useState('6rem'); // Dynamic content padding
-  const [containerMinHeight, setContainerMinHeight] = useState('auto'); // Dynamic container min height
-
-  const TOTAL_PRODUCTS = products.length;
-  const LOOP_SETS = 3; // Render 3 complete sets
-  const CENTER_SET = 1; // Index of the center set (0, 1, 2)
+  
+  // Memoized constants to prevent recalculation
+  const { TOTAL_PRODUCTS, LOOP_SETS, CENTER_SET } = useMemo(() => ({
+    TOTAL_PRODUCTS: products.length,
+    LOOP_SETS: 3, // Render 3 complete sets
+    CENTER_SET: 1, // Index of the center set (0, 1, 2)
+  }), [products.length]);
+  // Memoized dimension calculations for performance
+  const calculateDimensions = useCallback((width, height) => {
+    // Base dimensions
+    let cardW = 500;
+    let cardH = 896;
+    let wheelW = 128;
+    let logoW = 200;
+    let logoH = 120;
+    
+    // Responsive adjustments for smaller screens
+    if (width < 360) {
+      // Very small phones
+      cardW = Math.min(250, width * 0.65);
+      cardH = cardW * 1.792;
+      wheelW = Math.min(80, width * 0.22);
+      logoW = Math.min(120, width * 0.33);
+      logoH = logoW * 0.6;
+    } else if (width < 480) {
+      // Small phones
+      cardW = Math.min(280, width * 0.7);
+      cardH = cardW * 1.792;
+      wheelW = Math.min(96, width * 0.2);
+      logoW = Math.min(140, width * 0.29);
+      logoH = logoW * 0.6;
+    } else if (width < 640) {
+      // Large phones
+      cardW = Math.min(320, width * 0.75);
+      cardH = cardW * 1.792;
+      wheelW = Math.min(128, width * 0.2);
+      logoW = Math.min(160, width * 0.25);
+      logoH = logoW * 0.6;
+    } else if (width < 768) {
+      // Small tablets
+      cardW = Math.min(400, width * 0.8);
+      cardH = cardW * 1.792;
+      wheelW = Math.min(160, width * 0.21);
+      logoW = Math.min(200, width * 0.26);
+      logoH = logoW * 0.6;
+    } else if (width < 1024) {
+      // Tablets
+      cardW = Math.min(450, width * 0.75);
+      cardH = cardW * 1.792;
+      wheelW = Math.min(192, width * 0.19);
+      logoW = Math.min(240, width * 0.23);
+      logoH = logoW * 0.6;
+    } else if (width < 1280) {
+      // Small laptops
+      cardW = 500;
+      cardH = 896;
+      wheelW = Math.min(256, width * 0.2);
+      logoW = Math.min(280, width * 0.22);
+      logoH = logoW * 0.6;
+    } else if (width < 1536) {
+      // Large laptops
+      cardW = 500;
+      cardH = 896;
+      wheelW = Math.min(320, width * 0.21);
+      logoW = Math.min(320, width * 0.21);
+      logoH = logoW * 0.6;
+    } else if (width < 1920) {
+      // Desktop
+      cardW = 500;
+      cardH = 896;
+      wheelW = Math.min(400, width * 0.21);
+      logoW = Math.min(360, width * 0.19);
+      logoH = logoW * 0.6;
+    } else {
+      // Large desktop/ultrawide
+      cardW = 500;
+      cardH = 896;
+      wheelW = Math.min(640, width * 0.33);
+      logoW = Math.min(400, width * 0.21);
+      logoH = logoW * 0.6;
+    }
+    
+    // Adjust wheel size based on viewport height for better proportions
+    const heightRatio = height / 1080; // Normalize to 1080p
+    wheelW = Math.max(80, Math.min(wheelW, wheelW * heightRatio * 1.2));
+    
+    // Adjust logo size based on viewport height for better proportions
+    logoH = Math.max(60, Math.min(logoH, logoH * heightRatio * 1.1));
+    logoW = logoH / 0.6; // Maintain aspect ratio
+    
+    // Ensure dimensions don't exceed reasonable bounds
+    wheelW = Math.max(80, Math.min(wheelW, 640));
+    logoW = Math.max(100, Math.min(logoW, 400));
+    logoH = Math.max(60, Math.min(logoH, 240));
+    
+    return { cardW, cardH, wheelW, logoW, logoH };
+  }, []);
 
   // Set responsive card dimensions and wheel size
   useEffect(() => {
@@ -40,125 +155,18 @@ export default function Home() {
         const width = window.innerWidth;
         const height = window.innerHeight;
         
-        // Base dimensions
-        let cardW = 500;
-        let cardH = 896;
-        let wheelW = 128;
-        let logoW = 200;
-        let logoH = 120;
-          // Responsive adjustments for smaller screens
-        if (width < 360) {
-          // Very small phones
-          cardW = Math.min(250, width * 0.65);
-          cardH = cardW * 1.792;
-          wheelW = Math.min(80, width * 0.22);
-          logoW = Math.min(120, width * 0.33);
-          logoH = logoW * 0.6;
-        } else if (width < 480) {
-          // Small phones
-          cardW = Math.min(280, width * 0.7);
-          cardH = cardW * 1.792;
-          wheelW = Math.min(96, width * 0.2);
-          logoW = Math.min(140, width * 0.29);
-          logoH = logoW * 0.6;
-        } else if (width < 640) {
-          // Large phones
-          cardW = Math.min(320, width * 0.75);
-          cardH = cardW * 1.792;
-          wheelW = Math.min(128, width * 0.2);
-          logoW = Math.min(160, width * 0.25);
-          logoH = logoW * 0.6;
-        } else if (width < 768) {
-          // Small tablets
-          cardW = Math.min(400, width * 0.8);
-          cardH = cardW * 1.792;
-          wheelW = Math.min(160, width * 0.21);
-          logoW = Math.min(200, width * 0.26);
-          logoH = logoW * 0.6;
-        } else if (width < 1024) {
-          // Tablets
-          cardW = Math.min(450, width * 0.75);
-          cardH = cardW * 1.792;
-          wheelW = Math.min(192, width * 0.19);
-          logoW = Math.min(240, width * 0.23);
-          logoH = logoW * 0.6;
-        } else if (width < 1280) {
-          // Small laptops
-          cardW = 500;
-          cardH = 896;
-          wheelW = Math.min(256, width * 0.2);
-          logoW = Math.min(280, width * 0.22);
-          logoH = logoW * 0.6;
-        } else if (width < 1536) {
-          // Large laptops
-          cardW = 500;
-          cardH = 896;
-          wheelW = Math.min(320, width * 0.21);
-          logoW = Math.min(320, width * 0.21);
-          logoH = logoW * 0.6;
-        } else if (width < 1920) {
-          // Desktop
-          cardW = 500;
-          cardH = 896;
-          wheelW = Math.min(400, width * 0.21);
-          logoW = Math.min(360, width * 0.19);
-          logoH = logoW * 0.6;
-        } else {
-          // Large desktop/ultrawide
-          cardW = 500;
-          cardH = 896;
-          wheelW = Math.min(640, width * 0.33);
-          logoW = Math.min(400, width * 0.21);
-          logoH = logoW * 0.6;
-        }
-        
-        // Adjust wheel size based on viewport height for better proportions
-        const heightRatio = height / 1080; // Normalize to 1080p
-        wheelW = Math.max(80, Math.min(wheelW, wheelW * heightRatio * 1.2));
-        
-        // Adjust logo size based on viewport height for better proportions
-        logoH = Math.max(60, Math.min(logoH, logoH * heightRatio * 1.1));
-        logoW = logoH / 0.6; // Maintain aspect ratio
-        
-        // Ensure dimensions don't exceed reasonable bounds
-        wheelW = Math.max(80, Math.min(wheelW, 640));
-        logoW = Math.max(100, Math.min(logoW, 400));
-        logoH = Math.max(60, Math.min(logoH, 240));
-          // Calculate responsive padding values
-        let logoPaddingValue, contentPaddingValue, containerMinHeightValue;
-        
-        if (width < 480) {
-          logoPaddingValue = '0.75rem';
-          contentPaddingValue = `${logoH + 32}px`; // Logo height + 2rem
-          containerMinHeightValue = '60vh';
-        } else if (width < 768) {
-          logoPaddingValue = '1rem';
-          contentPaddingValue = `${logoH + 40}px`; // Logo height + 2.5rem
-          containerMinHeightValue = '60vh';
-        } else if (width < 1024) {
-          logoPaddingValue = '1.5rem';
-          contentPaddingValue = `${logoH + 48}px`; // Logo height + 3rem
-          containerMinHeightValue = 'auto';
-        } else {
-          logoPaddingValue = '2rem';
-          contentPaddingValue = `${logoH + 64}px`; // Logo height + 4rem
-          containerMinHeightValue = 'auto';
-        }
+        const { cardW, cardH, wheelW, logoW, logoH } = calculateDimensions(width, height);
         
         setCardWidth(cardW);
         setCardHeight(cardH);
         setWheelSize(wheelW);
         setLogoSize({ width: logoW, height: logoH });
-        setLogoPadding(logoPaddingValue);
-        setContentPadding(contentPaddingValue);
-        setContainerMinHeight(containerMinHeightValue);} else {
+      } else {
         // Default dimensions for SSR
         setCardWidth(500);
         setCardHeight(896);
-        setWheelSize(128);        setLogoSize({ width: 200, height: 120 });
-        setLogoPadding('2rem');
-        setContentPadding('6rem');
-        setContainerMinHeight('auto');
+        setWheelSize(128);
+        setLogoSize({ width: 200, height: 120 });
       }
     };
 
@@ -171,12 +179,13 @@ export default function Home() {
       timeoutId = setTimeout(updateDimensions, 100);
     };
     
-    window.addEventListener('resize', handleResize);
-    return () => {
+    window.addEventListener('resize', handleResize);    return () => {
       window.removeEventListener('resize', handleResize);
       clearTimeout(timeoutId);
     };
-  }, []);  // Calculate the position for centering a product
+  }, [calculateDimensions]);
+
+  // Calculate the position for centering a product
   const getCenterPosition = useCallback((productIndex) => {
     if (!containerRef.current) return 0;
 
@@ -189,7 +198,7 @@ export default function Home() {
     const productOffset = productIndex * cardWidth;
 
     return viewportCenter - cardCenter - centerSetOffset - productOffset;
-  }, [cardWidth, TOTAL_PRODUCTS]);  // Handle infinite loop boundary repositioning
+  }, [cardWidth, TOTAL_PRODUCTS, CENTER_SET]);  // Handle infinite loop boundary repositioning
   const handleLoopBoundaries = useCallback((currentTranslate) => {
     const setWidth = TOTAL_PRODUCTS * cardWidth;
 
@@ -206,7 +215,7 @@ export default function Home() {
     }
 
     return currentTranslate;
-  }, [cardWidth, TOTAL_PRODUCTS]);  // Navigate to specific product with improved infinite loop handling
+  }, [cardWidth, TOTAL_PRODUCTS]);// Navigate to specific product with improved infinite loop handling
   const navigateToProduct = useCallback((targetIndex) => {
     // Normalize index to valid range
     const normalizedIndex = ((targetIndex % TOTAL_PRODUCTS) + TOTAL_PRODUCTS) % TOTAL_PRODUCTS;
@@ -259,7 +268,7 @@ export default function Home() {
     const productIndex = Math.round(targetPosition / cardWidth);
 
     return ((productIndex % TOTAL_PRODUCTS) + TOTAL_PRODUCTS) % TOTAL_PRODUCTS;
-  }, [cardWidth, TOTAL_PRODUCTS]);
+  }, [cardWidth, TOTAL_PRODUCTS, CENTER_SET]);
   // Initialize slider position
   useEffect(() => {
     if (!isInitialized && containerRef.current) {
@@ -267,13 +276,14 @@ export default function Home() {
       const initialPosition = getCenterPosition(0);
       setTranslateX(initialPosition);
     }
-  }, [isInitialized, getCenterPosition]);  // Handle window resize with enhanced wheel repositioning
+  }, [isInitialized, getCenterPosition]);
+  // Handle window resize with enhanced wheel repositioning
   useEffect(() => {
     const handleResize = () => {
       if (isInitialized) {
         const newPosition = getCenterPosition(currentIndex);
         setTranslateX(newPosition);
-        // Dimensions and padding are already handled in the updateDimensions useEffect
+        // Wheel size is already handled in the updateDimensions useEffect
       }
     };
 
@@ -437,46 +447,33 @@ export default function Home() {
     if (clickedSegment !== currentIndex) {
       navigateToProduct(clickedSegment);
     }
-  }, [currentIndex, products.length, navigateToProduct]);
-
-  return (
-    <div className="min-h-screen flex flex-col relative" style={{ backgroundColor: '#070A1B' }}>      {/* Logo positioned absolutely at top with enhanced responsive sizing */}
-      <div 
-        className="absolute top-0 left-1/2 transform -translate-x-1/2 z-20 logo-container"
-        style={{
-          paddingTop: logoPadding
-        }}
-      >
-        <Image
-          src="/logo/playful2.png"
-          alt="Playful Logo"
-          width={logoSize.width}
-          height={logoSize.height}
-          className="object-contain transition-all duration-300 ease-out"
-          style={{
-            width: `${logoSize.width}px`,
-            height: `${logoSize.height}px`,
-            maxWidth: '90vw', // Ensure it never exceeds viewport width
-            minWidth: '100px', // Ensure minimum readability
-          }}
-          sizes={`${logoSize.width}px`}
-          quality={95}
-          priority
-        />
-      </div>      {/* Main content area with responsive spacing and mobile optimization */}
+  }, [currentIndex, products.length, navigateToProduct]);  return (
+    <ErrorBoundary>
+      <div className="min-h-screen flex flex-col relative" style={{ backgroundColor: '#070A1B' }}>
+      {/* Optimized Logo Component */}
+      <ResponsiveLogo logoSize={logoSize} />{/* Main content area with responsive spacing and mobile optimization */}
       <div 
         className="flex-1 flex flex-col justify-center items-center px-2 sm:px-4 md:px-6 lg:px-8 pb-20 sm:pb-24 md:pb-32 lg:pb-40 xl:pb-48"
         style={{
-          paddingTop: contentPadding
+          paddingTop: typeof window !== 'undefined' ? 
+            window.innerWidth < 480 ? 
+              `${logoSize.height + 32}px` : // Logo height + 2rem
+            window.innerWidth < 768 ? 
+              `${logoSize.height + 40}px` : // Logo height + 2.5rem
+            window.innerWidth < 1024 ? 
+              `${logoSize.height + 48}px` : // Logo height + 3rem
+              `${logoSize.height + 64}px`   // Logo height + 4rem
+            : '6rem' // Fallback for SSR
         }}
       >
         {/* Slider Container with responsive constraints */}
         <div className="w-full max-w-full overflow-x-hidden">
           <div
             ref={containerRef}
-            className="w-full overflow-hidden relative"            style={{
+            className="w-full overflow-hidden relative"
+            style={{
               // Ensure minimum height for mobile devices
-              minHeight: containerMinHeight
+              minHeight: typeof window !== 'undefined' && window.innerWidth < 768 ? '60vh' : 'auto'
             }}
           >
             {/* Product Slider with Improved Infinite Loop */}
@@ -531,88 +528,37 @@ export default function Home() {
                     // Distance 2+ cards - always completely hidden on all screen sizes
                     scale = distantScale;
                     opacity = 0;
-                  }
-
-                  return (
-                    <div
+                  }                  return (
+                    <ProductCard
                       key={`set-${setIndex}-product-${product.id}`}
-                      className="flex-shrink-0 transition-transform duration-300 ease-out"
-                      style={{
-                        width: `${cardWidth}px`,
-                        transform: `scale(${scale})`,
-                        opacity: opacity,
-                        zIndex: isCenter ? 10 : normalizedDistance === 1 ? 5 : 1
-                      }}                    >                      <div
-                        className="relative w-full overflow-hidden transition-all duration-300 product-image-container"
-                        style={{ 
-                          height: `${cardHeight}px`,
-                          background: 'transparent',
-                          boxShadow: 'none',
-                          border: 'none'
-                        }}
-                      ><Image
-                          src={product.image}
-                          alt={product.name}
-                          fill
-                          className="object-contain pointer-events-none transition-all duration-300 ease-out product-image product-no-background"
-                          sizes="(max-width: 360px) 280px, (max-width: 480px) 320px, (max-width: 640px) 400px, (max-width: 768px) 450px, (max-width: 1024px) 500px, (max-width: 1280px) 500px, (max-width: 1536px) 500px, 500px"
-                          quality={isCenter ? 95 : normalizedDistance === 1 ? 85 : 75}
-                          draggable={false}
-                          priority={setIndex === CENTER_SET && productIndex === currentIndex}
-                          loading={setIndex === CENTER_SET ? "eager" : "lazy"}
-                          placeholder="blur"
-                          blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="                          style={{
-                            objectFit: 'contain',
-                            objectPosition: 'center',
-                            transform: `scale(${isCenter ? 1 : 0.95})`,
-                            filter: `brightness(${isCenter ? 1.0 : normalizedDistance === 1 ? 0.9 : 0.8}) saturate(${isCenter ? 1.0 : 1.0})`
-                          }}
-                        />
-                      </div>
-                    </div>
+                      product={product}
+                      setIndex={setIndex}
+                      productIndex={productIndex}
+                      isCenter={isCenter}
+                      normalizedDistance={normalizedDistance}
+                      scale={scale}
+                      opacity={opacity}
+                      cardWidth={cardWidth}
+                      cardHeight={cardHeight}
+                      isMobile={isMobile}
+                    />
                   );
                 })
               ).flat()}
             </div>
           </div>
-        </div>
-      </div>      {/* Navigation Wheel - Perfect Bottom Center Positioning */}
-      <div 
-        className="fixed bottom-0 left-1/2 z-10 wheel-container"
-        style={{
-          transform: `translateX(-50%) translateY(50%)`,
-          transition: 'transform 0.3s ease-out'
-        }}
-      ><div
-          className="relative transition-transform duration-500 ease-out wheel-rotation cursor-pointer"
-          style={{
-            width: `${wheelSize}px`,
-            height: `${wheelSize}px`,
-            transform: `rotate(${-currentIndex * (360 / products.length)}deg)`,
-            transition: isDragging ? 'transform 0.1s ease-out' : 'transform 0.5s cubic-bezier(0.25, 0.1, 0.25, 1)',
-            willChange: 'transform'
-          }}
-          onClick={handleWheelClick}
-          onMouseEnter={(e) => e.currentTarget.style.filter = 'drop-shadow(0 6px 16px rgba(0, 0, 0, 0.4)) brightness(1.1)'}
-          onMouseLeave={(e) => e.currentTarget.style.filter = 'drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3))'}
-        >
-          <Image
-            src="/product_nav/wheel-1.png"
-            alt="Navigation Wheel"
-            fill
-            className="object-contain wheel-image"
-            sizes={`${wheelSize}px`}
-            quality={85}
-            priority={true}
-            draggable={false}
-            style={{
-              filter: 'drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3))',
-              transform: 'translateZ(0)',
-              backfaceVisibility: 'hidden'
-            }}
-          />
-        </div>
+        </div>      </div>      {/* Optimized Navigation Wheel Component */}
+      <NavigationWheel 
+        wheelSize={wheelSize}
+        currentIndex={currentIndex}
+        products={products}
+        isDragging={isDragging}
+        handleWheelClick={handleWheelClick}
+      />      {/* Performance Monitoring Components */}
+      <WebVitalsMonitor />
+      <MemoryManager />
+      <ServiceWorkerRegistration />
       </div>
-    </div>
+    </ErrorBoundary>
   );
 }
