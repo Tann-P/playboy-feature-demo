@@ -21,21 +21,17 @@ export default function Home() {
     { id: 3, name: "GAME ON 54", image: "/product/condom-product-GAME ON-54.png" },
     { id: 4, name: "GAME ON 56", image: "/product/condom-product-GAME ON-56.png" },
     { id: 5, name: "GAME ON 60", image: "/product/condom-product-GAME ON-60.png" },
-  ];
-  
-  // Loop configuration
-  const CARD_WIDTH = 320; // 300px card + 20px gap
+  ];  // Loop configuration
+  const CARD_WIDTH = 900; // 850px card + 50px gap
   const TOTAL_PRODUCTS = products.length;
   const LOOP_SETS = 3; // Render 3 complete sets
   const CENTER_SET = 1; // Index of the center set (0, 1, 2)
 
   // Calculate the position for centering a product
   const getCenterPosition = useCallback((productIndex) => {
-    if (!containerRef.current) return 0;
-    
-    const containerWidth = containerRef.current.offsetWidth;
+    if (!containerRef.current) return 0;    const containerWidth = containerRef.current.offsetWidth;
     const viewportCenter = containerWidth / 2;
-    const cardCenter = 150; // Half of 300px card width
+    const cardCenter = 425; // Half of 850px card width
     
     // Position in center set
     const centerSetOffset = CENTER_SET * TOTAL_PRODUCTS * CARD_WIDTH;
@@ -109,11 +105,9 @@ export default function Home() {
 
   // Calculate which product is currently centered
   const getCurrentProductFromPosition = useCallback((translate) => {
-    if (!containerRef.current) return 0;
-    
-    const containerWidth = containerRef.current.offsetWidth;
+    if (!containerRef.current) return 0;    const containerWidth = containerRef.current.offsetWidth;
     const viewportCenter = containerWidth / 2;
-    const cardCenter = 150;
+    const cardCenter = 425;
     
     // Calculate the product position that would be centered
     const centerSetOffset = CENTER_SET * TOTAL_PRODUCTS * CARD_WIDTH;
@@ -256,36 +250,35 @@ export default function Home() {
       document.removeEventListener('mouseup', handleGlobalMouseUp);
       document.body.style.userSelect = '';
     };
-  }, [isDragging, handleMouseMove, handleMouseUp]);
-
-  return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-8" style={{ backgroundColor: '#070A1B' }}>
+  }, [isDragging, handleMouseMove, handleMouseUp]);  return (
+    <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#070A1B' }}>
+      {/* Logo positioned absolutely at top */}
+      <div className="absolute top-0 left-1/2 transform -translate-x-1/2 pt-12 z-20">
+        <Image
+          src="/logo/playful2.png"
+          alt="Playful Logo"
+          width={250}
+          height={150}
+          className="object-contain"
+          priority
+        />
+      </div>
+      
       {/* Centered Product Content Container */}
-      <div className="flex flex-col items-center justify-center w-full max-w-6xl">        {/* Playful Logo */}
-        <div className="mb-4">
-          <Image
-            src="/logo/playful2.png"
-            alt="Playful Logo"
-            width={200}
-            height={100}
-            className="object-contain"
-            priority
-          />        </div>
-        
+      <div className="flex flex-col items-center justify-center w-full h-screen">
         {/* Slider Container */}
         <div className="w-full">
           <div 
             ref={containerRef}
-            className="w-full max-w-6xl overflow-hidden"
+            className="w-full overflow-hidden"
           >
             {/* Product Slider with Improved Infinite Loop */}
             <div
               ref={sliderRef}
-              className="flex cursor-grab select-none"
-              style={{
+              className="flex cursor-grab select-none"              style={{
                 transform: `translateX(${translateX}px)`,
                 transition: isDragging ? 'none' : 'transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-                gap: '20px',
+                gap: '50px',
                 width: 'max-content'
               }}
               onMouseDown={handleMouseDown}
@@ -294,49 +287,57 @@ export default function Home() {
               onTouchEnd={handleTouchEnd}
               onDragStart={(e) => e.preventDefault()}
             >
-              {/* Render multiple sets for seamless infinite loop */}
-              {Array.from({ length: LOOP_SETS }, (_, setIndex) =>
-                products.map((product, productIndex) => (
-                  <div
-                    key={`set-${setIndex}-product-${product.id}`}
-                    className="flex-shrink-0"
-                    style={{ width: '300px' }}
-                  >
-                    <div className="relative w-full h-80 rounded-xl overflow-hidden transition-all duration-300">
-                      <Image
-                        src={product.image}
-                        alt={product.name}
-                        fill
-                        className="object-contain p-4 pointer-events-none"
-                        sizes="300px"
-                        draggable={false}
-                        priority={setIndex === CENTER_SET}
-                      />
+              {/* Render multiple sets for seamless infinite loop */}              {Array.from({ length: LOOP_SETS }, (_, setIndex) =>
+                products.map((product, productIndex) => {
+                  // Calculate if this is the center product
+                  const isCenter = setIndex === CENTER_SET && productIndex === currentIndex;
+                  
+                  return (                    <div
+                      key={`set-${setIndex}-product-${product.id}`}
+                      className="flex-shrink-0 transition-transform duration-300 ease-out"
+                      style={{ 
+                        width: '850px',
+                        transform: isCenter ? 'scale(1.25)' : 'scale(1)',
+                        zIndex: isCenter ? 10 : 1
+                      }}
+                    >
+                      <div className="relative w-full h-[36rem] rounded-xl overflow-hidden transition-all duration-300">
+                        <Image
+                          src={product.image}
+                          alt={product.name}
+                          fill
+                          className="object-contain p-12 pointer-events-none"
+                          sizes="850px"
+                          draggable={false}
+                          priority={setIndex === CENTER_SET}
+                        />
+                      </div>
                     </div>
-                  </div>
-                ))
+                  );
+                })
               ).flat()}
             </div>
           </div>
+        </div>      </div>
+        {/* Navigation Wheel - Positioned at bottom with half visible */}
+      <div className="fixed bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2">
+        <div 
+          className="relative w-160 h-160 transition-transform duration-500 ease-out"
+          style={{
+            transform: `rotate(${-currentIndex * (360 / products.length)}deg)`,
+            transition: isDragging ? 'transform 0.1s ease-out' : 'transform 0.5s ease-out',
+            width: '640px',
+            height: '640px'
+          }}
+        >
+          <Image
+            src="/product_nav/wheel-1.png"
+            alt="Navigation Wheel"
+            fill
+            className="object-contain"
+            sizes="640px"
+          />
         </div>
-
-        {/* Navigation Wheel */}
-        <div className="mt-8">
-          <div 
-            className="relative w-64 h-64 mx-auto transition-transform duration-500 ease-out"
-            style={{
-              transform: `rotate(${-currentIndex * (360 / products.length)}deg)`,
-              transition: isDragging ? 'transform 0.1s ease-out' : 'transform 0.5s ease-out'
-            }}
-          >
-            <Image
-              src="/product_nav/wheel-1.png"
-              alt="Navigation Wheel"
-              fill
-              className="object-contain"
-              sizes="256px"
-            />
-          </div>        </div>
       </div>
     </div>
   );
